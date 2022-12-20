@@ -5,6 +5,7 @@ import listUsersService from "../../services/users/listUsers.service";
 import deleteUserService from "../../services/users/deleteUser.service";
 import updateUserService from "../../services/users/updateUser.service";
 import AppDataSource from "../../data-source";
+import { validatedBodySchema } from "../../schemas/user.schema";
 import { User } from "../../entities/user.entity";
 import { AppError } from "../../errors/AppError";
 
@@ -29,7 +30,6 @@ const listUsersController = async ( request: Request, response: Response) => {
 
 
 const deleteUserController = async ( request: Request, response: Response) => {
-    console.log(request.params.user_id)
     const dataRepository = AppDataSource.getRepository(User)
     const isUserAdmin = await dataRepository.findOneBy({
         email: request.user.email
@@ -46,8 +46,23 @@ const deleteUserController = async ( request: Request, response: Response) => {
 }
 
 const updateUserController = async (request: Request, response: Response) => {
+    const dataRepository = AppDataSource.getRepository(User)
+    const isUserAdmin = await dataRepository.findOneBy({
+        id: request.user.id
+    })
+
+    if(isUserAdmin?.isAdm === false) {
+        throw new AppError("O USUÁRIO PRECISA SER ADMIN!", 401)
+    }
+
     const data = await updateUserService(request.body, request.params.id)
-    return response.status(200).send(data)
+
+    const validatedData = await validatedBodySchema.validate(data, {
+        abortEarly: false,
+        stripUnknown: true
+    })
+
+    return response.status(200).json(validatedData)
 }
 
 export { createUserController, listUsersController, deleteUserController,updateUserController }

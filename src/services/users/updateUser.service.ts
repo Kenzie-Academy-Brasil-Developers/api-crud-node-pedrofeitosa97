@@ -11,13 +11,14 @@ const updateUserService = async (body: IUserUpdate, user_id: string): Promise<IU
         throw new AppError("ID DE USUÁRIO INVÁLIDO", 404)
     }
 
+    if (body.hasOwnProperty('isAdm') || body.hasOwnProperty('id') || body.hasOwnProperty('isActive')) {
+        throw new AppError("Campos inválidos.", 401)
+    }
+
     const updateUser = dataRepository.create({
         ...user,
-        ...body,
-        password: undefined
+        ...body
     })
-
-    console.log(updateUser)
     
     await dataRepository.save(updateUser)
 

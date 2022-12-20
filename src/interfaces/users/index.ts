@@ -20,6 +20,11 @@ export interface IUserLogin {
     password: string
 }
 
+export interface IUserPatch {
+    email: string
+    name: string
+}
+
 export interface IUserUpdate {
     name?: string
     email?: string
