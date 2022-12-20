@@ -11,7 +11,7 @@ const updateUserService = async (body: IUserUpdate, user_id: string): Promise<IU
         throw new AppError("ID DE USUÁRIO INVÁLIDO", 404)
     }
 
-    if (body.hasOwnProperty('isAdm') || body.hasOwnProperty('id') || body.hasOwnProperty('isActive')) {
+    if (body.hasOwnProperty('id') || body.hasOwnProperty('isAdm') || body.hasOwnProperty('isActive')) {
         throw new AppError("Campos inválidos.", 401)
     }
 
